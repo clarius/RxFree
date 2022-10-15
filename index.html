@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <link rel="stylesheet" type="text/css" media="screen" href="/RxFree/assets/css/style.css?v=d7fcf324b09847fdcd80247eaa10dfebfef5f051">
+
+<!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>RxFree | An ultra-lightweight Rx source-only nuget to avoid depending on the full System.Reactive for IObservable producers</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="RxFree" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="An ultra-lightweight Rx source-only nuget to avoid depending on the full System.Reactive for IObservable producers" />
+<meta property="og:description" content="An ultra-lightweight Rx source-only nuget to avoid depending on the full System.Reactive for IObservable producers" />
+<meta property="og:site_name" content="RxFree" />
+<script type="application/ld+json">
+{"@type":"WebSite","headline":"RxFree","url":"/RxFree/","description":"An ultra-lightweight Rx source-only nuget to avoid depending on the full System.Reactive for IObservable producers","name":"RxFree","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/devlooped/RxFree">View on GitHub</a>
+
+          <h1 id="project_title">RxFree</h1>
+          <h2 id="project_tagline">An ultra-lightweight Rx source-only nuget to avoid depending on the full System.Reactive for IObservable<T> producers</h2>
+
+          
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1 id="-rxfree"><img src="https://raw.githubusercontent.com/devlooped/RxFree/main/assets/img/icon.png" alt="Icon" /> RxFree</h1>
+
+<p><a href="https://www.nuget.org/packages/RxFree"><img src="https://img.shields.io/nuget/v/RxFree.svg?color=royalblue" alt="Version" /></a>
+<a href="https://www.nuget.org/packages/RxFree"><img src="https://img.shields.io/nuget/dt/RxFree.svg?color=darkmagenta" alt="Downloads" /></a>
+<a href="https://github.com/devlooped/RxFree/blob/main/license.txt"><img src="https://img.shields.io/github/license/devlooped/RxFree.svg?color=blue" alt="License" /></a>
+<a href="https://github.com/devlooped/RxFree/actions"><img src="https://github.com/devlooped/RxFree/workflows/build/badge.svg?branch=main" alt="Build" /></a></p>
+
+<!-- #content -->
+<p>An ultra-lightweight Rx source-only (C#) nuget to avoid depending on the full 
+<a href="https://www.nuget.org/packages/System.Reactive">System.Reactive</a> for <code class="language-plaintext highlighter-rouge">IObservable&lt;T&gt;</code> 
+producers.</p>
+
+<p>100% dependency-free (source-based) support for library authors exposing IObservable&lt;T&gt; leveraging 
+Subject&lt;T&gt;, CompositeDisposable, IObservable&lt;T&gt;.Subscribe extension method overloads,
+IObservable&lt;T&gt;.Select/Where/OfType LINQ operators, and others.</p>
+
+<h1 id="usage">Usage</h1>
+
+<p>All of the documentation and samples for <code class="language-plaintext highlighter-rouge">Subject&lt;T&gt;</code> and the provided extension methods 
+(i.e. <code class="language-plaintext highlighter-rouge">Subscribe</code> overloads) that are officially available for <code class="language-plaintext highlighter-rouge">System.Reactive</code> apply to 
+this project as well, since the implementations are heavily based on it (taking them to 
+the bare essentials for source-only inclusion, with <code class="language-plaintext highlighter-rouge">Subject&lt;T&gt;</code> being pretty much exactly 
+the same). 
+For example: <a href="https://docs.microsoft.com/en-us/previous-versions/dotnet/reactive-extensions/hh242970(v=vs.103)">Using Subjects</a>.</p>
+
+<div class="language-csharp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Reactive.Subjects</span><span class="p">;</span>
+
+<span class="kt">var</span> <span class="n">subject</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Subject</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+
+<span class="n">subject</span><span class="p">.</span><span class="nf">Subscribe</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Got raw value </span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="s">"</span><span class="p">));</span>
+
+<span class="n">subject</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="kt">int</span><span class="p">.</span><span class="nf">TryParse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="k">out</span> <span class="n">_</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="kt">int</span><span class="p">.</span><span class="nf">Parse</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Subscribe</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Got number </span><span class="p">{</span><span class="n">x</span><span class="p">}</span><span class="s"> (squared is </span><span class="p">{</span><span class="n">x</span> <span class="p">*</span> <span class="n">x</span><span class="p">}</span><span class="s">)"</span><span class="p">));</span>
+
+<span class="n">subject</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="kt">bool</span><span class="p">.</span><span class="nf">TryParse</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="k">out</span> <span class="kt">var</span> <span class="k">value</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="k">value</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Subscribe</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">$"Got a boolean True"</span><span class="p">));</span>
+
+<span class="k">while</span> <span class="p">(</span><span class="n">Console</span><span class="p">.</span><span class="nf">ReadLine</span><span class="p">()</span> <span class="k">is</span> <span class="kt">var</span> <span class="n">line</span> <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+    <span class="n">subject</span><span class="p">.</span><span class="nf">OnNext</span><span class="p">(</span><span class="n">line</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>This package is a drop-in replacement for <code class="language-plaintext highlighter-rouge">System.Reactive</code> if you are only using the 
+most common subset of features in it that are also provided in this project.</p>
+
+<h1 id="why">Why</h1>
+
+<p>For the most part, a producer needs the <code class="language-plaintext highlighter-rouge">Subject&lt;T&gt;</code> (read more about 
+<a href="https://docs.microsoft.com/en-us/previous-versions/dotnet/reactive-extensions/hh242970(v=vs.103)">using subjects</a>) 
+and maybe the <code class="language-plaintext highlighter-rouge">ObservableExtensions</code> that provide <code class="language-plaintext highlighter-rouge">Subscribe</code> overloads to provide 
+lambdas instead of an <code class="language-plaintext highlighter-rouge">IObserver&lt;T&gt;</code>. Taking the somewhat large and heavy dependency 
+on the full <a href="https://www.nuget.org/packages/System.Reactive">System.Reactive</a> to consume 
+just the basics a reusable library needs is overkill in most cases.</p>
+
+<p>In addition to <code class="language-plaintext highlighter-rouge">Subject&lt;T&gt;</code>, typical activities of a producer are to handle disposables 
+and potentially filter/query/convert other observables they consume themselves. 
+So the following simple features are provided:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">Disposable.Empty</code> and <code class="language-plaintext highlighter-rouge">Disposable.Create(Action)</code></li>
+  <li><code class="language-plaintext highlighter-rouge">CompositeDisposable</code>: allows disposing subscriptions as a group</li>
+  <li><code class="language-plaintext highlighter-rouge">Subject&lt;T&gt;</code>: for producing observable sequences</li>
+  <li>Extension methods for <code class="language-plaintext highlighter-rouge">IObservable&lt;T&gt;</code>:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">Subscribe</code> overloads receiving delegates for onNext, onError and onCompleted</li>
+      <li><code class="language-plaintext highlighter-rouge">Select</code>/<code class="language-plaintext highlighter-rouge">Where</code>/<code class="language-plaintext highlighter-rouge">OfType</code> LINQ operators</li>
+    </ul>
+  </li>
+</ul>
+
+<p>This is what this project provides at the moment, in source form, in your project, as internal 
+classes for your own implementation usage, with no external dependencies. They are not even 
+visible in the project since NuGet provides them automatically to the compiler, embedded into 
+your own assembly, and which you can fully debug as any other code in your project.</p>
+
+<!-- #content -->
+
+<h1 id="dogfooding">Dogfooding</h1>
+
+<p><a href="https://pkg.kzu.io/index.json"><img src="https://img.shields.io/endpoint?url=https://shields.kzu.io/vpre/RxFree/main&amp;label=nuget.ci&amp;color=brightgreen" alt="CI Version" /></a>
+<a href="https://github.com/devlooped/RxFree/actions"><img src="https://github.com/devlooped/RxFree/workflows/build/badge.svg?branch=main" alt="Build" /></a></p>
+
+<p>We also produce CI packages from branches and pull requests so you can dogfood builds as quickly as they are produced.</p>
+
+<p>The CI feed is <code class="language-plaintext highlighter-rouge">https://pkg.kzu.io/index.json</code>.</p>
+
+<p>The versioning scheme for packages is:</p>
+
+<ul>
+  <li>PR builds: <em>42.42.42-pr</em><code class="language-plaintext highlighter-rouge">[NUMBER]</code></li>
+  <li>Branch builds: <em>42.42.42-</em><code class="language-plaintext highlighter-rouge">[BRANCH]</code>.<code class="language-plaintext highlighter-rouge">[COMMITS]</code></li>
+</ul>
+
+<!-- include https://github.com/devlooped/sponsors/raw/main/footer.md -->
+<h1 id="sponsors">Sponsors</h1>
+
+<!-- sponsors.md -->
+<p><a href="https://github.com/clarius"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/clarius.png" alt="Clarius Org" title="Clarius Org" /></a>
+<a href="https://github.com/MelbourneDeveloper"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/MelbourneDeveloper.png" alt="Christian Findlay" title="Christian Findlay" /></a>
+<a href="https://github.com/augustoproiete"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/augustoproiete.png" alt="C. Augusto Proiete" title="C. Augusto Proiete" /></a>
+<a href="https://github.com/KirillOsenkov"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/KirillOsenkov.png" alt="Kirill Osenkov" title="Kirill Osenkov" /></a>
+<a href="https://github.com/MFB-Technologies-Inc"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/MFB-Technologies-Inc.png" alt="MFB Technologies, Inc." title="MFB Technologies, Inc." /></a>
+<a href="https://github.com/sandrock"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/sandrock.png" alt="SandRock" title="SandRock" /></a>
+<a href="https://github.com/agocke"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/agocke.png" alt="Andy Gocke" title="Andy Gocke" /></a>
+<a href="https://github.com/shahzadhuq"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/.github/avatars/shahzadhuq.png" alt="Shahzad Huq" title="Shahzad Huq" /></a></p>
+
+<!-- sponsors.md -->
+
+<p><a href="https://github.com/sponsors/devlooped"><img src="https://raw.githubusercontent.com/devlooped/sponsors/main/sponsor.png" alt="Sponsor this project" title="Sponsor this project" /></a>
+ </p>
+
+<p><a href="https://github.com/sponsors">Learn more about GitHub Sponsors</a></p>
+
+<!-- https://github.com/devlooped/sponsors/raw/main/footer.md -->
+
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        
+        <p class="copyright">RxFree maintained by <a href="https://github.com/devlooped">devlooped</a></p>
+        
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+  </body>
+</html>
